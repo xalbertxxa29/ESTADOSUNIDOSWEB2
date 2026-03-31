@@ -1,53 +1,5 @@
 // i18n / Languages Module
 const languages = {
-    es: {
-        page_title: 'LiderControl EU',
-        sistema_de_reportes: 'Sistema de Reportes',
-        login_subtitle: 'Reportes e Incidencias · EU',
-        email_label: 'Correo Electrónico',
-        email_placeholder: 'tu@liderman.com.pe',
-        password_label: 'Contraseña',
-        password_placeholder: '••••••••',
-        login_button: 'Iniciar Sesión',
-        // Errors
-        error_user_not_found: 'El usuario no existe.',
-        error_wrong_password: 'Contraseña incorrecta.',
-        error_invalid_email: 'Correo electrónico inválido.',
-        error_too_many_requests: 'Demasiados intentos. Intenta más tarde.',
-        error_user_disabled: 'Usuario deshabilitado.',
-        error_login_failed: 'Error al iniciar sesión. Verifica tus datos.',
-        firebase_not_initialized: 'Firebase no está inicializado.',
-        // Sidebar & Nav
-        dashboard_menu: 'Dashboard',
-        table_menu: 'Tabla de Datos',
-        logout_button: 'Cerrar Sesión',
-        // Tabs
-        facility_tab: 'FACILITY',
-        security_tab: 'SECURITY',
-        // Dashboard
-        dashboard_title: 'Dashboard',
-        table_title: 'Tabla de Datos',
-        total_records: 'Total de Registros',
-        incident_records: 'Incidencias Registradas',
-        records_by_date: 'Registros por Fecha',
-        records_by_agent: 'Registros por Agente',
-        marking_points: 'Puntos de Marcación',
-        marking_location: 'Ubicación de Marcaciones',
-        // Filters
-        filters_title: 'Filtros',
-        from_date: 'Desde',
-        to_date: 'Hasta',
-        filter_button: 'Filtrar',
-        clear_button: 'Limpiar',
-        // Table
-        export_excel: 'Exportar Excel',
-        export_pdf: 'Exportar PDF',
-        select_dates: 'Por favor selecciona ambas fechas.',
-        no_records: 'No se encontraron registros.',
-        showing_records: 'Mostrando',
-        of: 'de',
-        records: 'registros',
-    },
     en: {
         page_title: 'LiderControl EU',
         sistema_de_reportes: 'Reporting System',
@@ -69,6 +21,10 @@ const languages = {
         dashboard_menu: 'Dashboard',
         table_menu: 'Data Table',
         logout_button: 'Sign Out',
+        main_menu: 'MAIN MENU',
+        eu_operations: 'EU OPERATIONS',
+        operator_role: 'Operator',
+        processing: 'Processing...',
         // Tabs
         facility_tab: 'FACILITY',
         security_tab: 'SECURITY',
@@ -81,37 +37,44 @@ const languages = {
         records_by_agent: 'Records by Agent',
         marking_points: 'Marking Points',
         marking_location: 'Marking Location',
+        incidents: 'Incidents',
+        records_label: 'Records',
+        select_dates: 'Please select both dates.',
         // Filters
         filters_title: 'Filters',
+        filters_security: 'Filters (Security)',
         from_date: 'From',
         to_date: 'To',
         filter_button: 'Filter',
         clear_button: 'Clear',
         // Table
+        table_header_date: 'Date',
+        table_header_name: 'Name',
+        table_header_point: 'Marking Point',
+        table_header_obs: 'Observation',
+        table_header_photo: 'Photo',
         export_excel: 'Export Excel',
         export_pdf: 'Export PDF',
-        select_dates: 'Please select both dates.',
         no_records: 'No records found.',
         showing_records: 'Showing',
         of: 'of',
         records: 'records',
+        // PDF/Excel specific
+        report_title: 'INCIDENT REPORT',
+        category: 'Category',
+        generated_on: 'Generated on',
+        all_records: 'All records',
+        excel_exported: 'Excel exported successfully.',
+        pdf_generated: 'PDF generated successfully.',
+        generating_pdf: 'Generating PDF...',
     }
 };
 
-const getCurrentLanguage = () => localStorage.getItem('lidercontrol_lang') || 'es';
-
-const setLanguage = (lang) => {
-    if (!languages[lang]) return;
-    localStorage.setItem('lidercontrol_lang', lang);
-    applyLanguage(lang);
-    // sync selectors
-    document.querySelectorAll('#languageSelector, #languageSelectorLogin').forEach(el => {
-        el.value = lang;
-    });
-};
+// Always return 'en'
+const getCurrentLanguage = () => 'en';
 
 const applyLanguage = (lang) => {
-    const dict = languages[lang] || languages.es;
+    const dict = languages.en;
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[key] !== undefined) el.textContent = dict[key];
@@ -125,15 +88,12 @@ const applyLanguage = (lang) => {
 
 export const i18n = {
     t: (key) => {
-        const lang = getCurrentLanguage();
-        return (languages[lang] || languages.es)[key] ?? key;
+        return languages.en[key] ?? key;
     },
-    setLanguage,
     getCurrentLanguage,
     applyLanguage,
     init: () => {
-        const lang = getCurrentLanguage();
-        applyLanguage(lang);
+        applyLanguage('en');
     }
 };
 

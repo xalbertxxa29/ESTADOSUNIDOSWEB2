@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LiderControl EU - Sistema de Reportes Liderman</title>
-  <meta name="description" content="Sistema de reportes e incidencias Liderman para operaciones en Estados Unidos." />
+  <title>LiderControl EU - Liderman Reporting System</title>
+  <meta name="description" content="Liderman reporting and incidence system for operations in the United States." />
   <link rel="icon" type="image/png" href="/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,48 +24,86 @@
       <div class="grid-pattern"></div>
     </div>
     <div class="login-wrapper">
-      <div class="login-language-bar">
-        <select id="languageSelectorLogin" class="lang-select-mini">
-          <option value="es">🇵🇪 Español</option>
-          <option value="en">🇺🇸 English</option>
-        </select>
-      </div>
-      <div class="login-card">
-        <div class="login-logo-wrap">
-          <img src="/logo.png" alt="Liderman Logo" class="login-logo" />
-        </div>
-        <div class="login-header">
-          <h1 class="login-title">
-            <span data-i18n="sistema_de_reportes">Sistema de Reportes</span>
-            <span class="brand">Liderman</span>
+      <!-- LEFT CONTENT: BRANDING & METRICS -->
+      <div class="login-content-left">
+        <div class="brand-showcase">
+          <img src="/logo.png" alt="Liderman Logo" class="brand-logo-large">
+          <h1 class="brand-title-main">
+            Customer <span class="highlight">Management</span>
           </h1>
-          <p class="login-subtitle" data-i18n="login_subtitle">Reportes e Incidencias · EU</p>
+          <p class="brand-description">
+            Centralized platform for managing requests, contracts, and commercial metrics in real time.
+          </p>
         </div>
-        <form id="loginForm" class="login-form">
-          <div class="form-group">
-            <label for="email" data-i18n="email_label">Correo Electrónico</label>
-            <div class="input-wrapper">
-              <i class="fas fa-envelope input-icon"></i>
-              <input type="email" id="email" data-i18n-placeholder="email_placeholder" placeholder="tu@email.com" required autocomplete="email" />
-            </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-value">100%</span>
+            <span class="metric-label">REAL-TIME DATA</span>
           </div>
-          <div class="form-group">
-            <label for="password" data-i18n="password_label">Contraseña</label>
-            <div class="input-wrapper">
-              <i class="fas fa-lock input-icon"></i>
-              <input type="password" id="password" data-i18n-placeholder="password_placeholder" placeholder="••••••••" required autocomplete="current-password" />
-              <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar/ocultar contraseña">
-                <i class="fas fa-eye" id="eyeIcon"></i>
-              </button>
-            </div>
+          <div class="metric-card">
+            <span class="metric-value">24/7</span>
+            <span class="metric-label">AVAILABILITY</span>
           </div>
-          <button type="submit" class="btn-login" id="loginBtn">
-            <span class="btn-login-text" data-i18n="login_button">Iniciar Sesión</span>
-            <div class="btn-login-spinner" id="loginSpinner"></div>
-            <i class="fas fa-arrow-right btn-login-arrow"></i>
-          </button>
-        </form>
-        <div id="loginError" class="login-error"></div>
+          <div class="metric-card full-width">
+            <span class="metric-value">+50k</span>
+            <span class="metric-label">MANAGED RECORDS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT CONTENT: LOGIN FORM -->
+      <div class="login-content-right">
+        <div class="login-card">
+          <div class="secure-badge">
+            <i class="fas fa-lock"></i> Secure access
+          </div>
+          
+          <div class="login-header">
+            <h2 class="welcome-title">Welcome <span class="sub">back</span></h2>
+            <p class="login-instruction">Enter your credentials to continue</p>
+          </div>
+
+          <form id="loginForm" class="login-form">
+            <div class="form-group">
+              <label data-i18n="email_label">EMAIL ADDRESS</label>
+              <div class="input-wrapper">
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="email" id="email" data-i18n-placeholder="email_placeholder" placeholder="your@email.com" required autocomplete="email" />
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label data-i18n="password_label">PASSWORD</label>
+              <div class="input-wrapper">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="password" data-i18n-placeholder="password_placeholder" placeholder="••••••••" required autocomplete="current-password" />
+                <button type="button" class="toggle-password" id="togglePassword">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-options">
+              <label class="remember-me">
+                <input type="checkbox" id="rememberMe">
+                <span>Remember me</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginBtn">
+              <span data-i18n="login_button" id="loginBtnText">Sign In</span>
+              <div class="btn-login-spinner hidden" id="loginSpinner"></div>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+            <div id="loginError" class="login-error hidden"></div>
+          </form>
+
+          <div class="login-footer">
+            <a href="#" class="footer-link">Privacy Policy</a>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   </div>
@@ -76,7 +114,7 @@
     <div id="loadingOverlay" class="loading-overlay" style="display:none;">
       <div class="loading-content">
         <div class="loading-ring"><div></div><div></div><div></div><div></div></div>
-        <p id="loadingMessage">Procesando...</p>
+        <p id="loadingMessage" data-i18n="processing">Processing...</p>
       </div>
     </div>
 
@@ -86,12 +124,12 @@
         <img src="/logo.png" alt="Liderman Logo" class="sidebar-logo" />
         <div class="sidebar-brand-text">
           <span class="sidebar-brand-name">LiderControl</span>
-          <span class="sidebar-brand-sub">EU Operations</span>
+          <span class="sidebar-brand-sub" data-i18n="eu_operations">EU Operations</span>
         </div>
       </div>
 
       <nav class="sidebar-nav">
-        <p class="sidebar-section-label">MENÚ PRINCIPAL</p>
+        <p class="sidebar-section-label" data-i18n="main_menu">MENÚ PRINCIPAL</p>
         <a href="#" class="nav-item active" data-page="dashboard" id="navDashboard">
           <div class="nav-icon"><i class="fas fa-chart-line"></i></div>
           <span class="nav-label" data-i18n="dashboard_menu">Dashboard</span>
@@ -109,12 +147,12 @@
           <div class="user-avatar-sidebar"><i class="fas fa-user-circle"></i></div>
           <div class="user-text-sidebar">
             <span id="userEmailSidebar" class="user-email-sidebar">---</span>
-            <span class="user-role-sidebar">Operador</span>
+            <span class="user-role-sidebar" data-i18n="operator_role">Operator</span>
           </div>
         </div>
         <button id="logoutBtn" class="btn-logout">
           <i class="fas fa-sign-out-alt"></i>
-          <span data-i18n="logout_button">Cerrar Sesión</span>
+          <span data-i18n="logout_button">Sign Out</span>
         </button>
       </div>
     </aside>
@@ -132,10 +170,7 @@
           </div>
         </div>
         <div class="header-right">
-          <select id="languageSelector" class="lang-select-header">
-            <option value="es">🇵🇪 ES</option>
-            <option value="en">🇺🇸 EN</option>
-          </select>
+          <!-- Language selector removed -->
           <div class="header-user">
             <div class="header-avatar">
               <i class="fas fa-user"></i>
@@ -169,7 +204,7 @@
                 <div class="metric-icon"><i class="fas fa-file-alt"></i></div>
                 <div class="metric-body">
                   <div class="metric-value" id="totalRecords">0</div>
-                  <div class="metric-label" data-i18n="incident_records">Incidencias Registradas</div>
+                  <div class="metric-label" data-i18n="incident_records">Registered Incidents</div>
                 </div>
                 <div class="metric-sparkline"></div>
               </div>
@@ -177,28 +212,28 @@
             <div class="charts-grid">
               <div class="chart-card">
                 <div class="chart-card-header">
-                  <h3 data-i18n="records_by_date">Registros por Fecha</h3>
+                  <h3 data-i18n="records_by_date">Records by Date</h3>
                   <i class="fas fa-chart-line text-accent"></i>
                 </div>
                 <div class="chart-body"><canvas id="lineChartDate"></canvas></div>
               </div>
               <div class="chart-card">
                 <div class="chart-card-header">
-                  <h3 data-i18n="records_by_agent">Registros por Agente</h3>
+                  <h3 data-i18n="records_by_agent">Records by Agent</h3>
                   <i class="fas fa-users text-accent"></i>
                 </div>
                 <div class="chart-body"><canvas id="barChartAgent"></canvas></div>
               </div>
               <div class="chart-card">
                 <div class="chart-card-header">
-                  <h3 data-i18n="marking_points">Puntos de Marcación</h3>
+                  <h3 data-i18n="marking_points">Marking Points</h3>
                   <i class="fas fa-map-marker-alt text-accent"></i>
                 </div>
                 <div class="chart-body"><canvas id="pieChartPoints"></canvas></div>
               </div>
               <div class="chart-card chart-card-map">
                 <div class="chart-card-header">
-                  <h3 data-i18n="marking_location">Ubicación de Marcaciones</h3>
+                  <h3 data-i18n="marking_location">Marking Location</h3>
                   <i class="fas fa-globe-americas text-accent"></i>
                 </div>
                 <div class="chart-body chart-body-map">
@@ -215,35 +250,35 @@
                 <div class="metric-icon metric-icon-sec"><i class="fas fa-shield-alt"></i></div>
                 <div class="metric-body">
                   <div class="metric-value metric-value-sec" id="totalRecordsSec">0</div>
-                  <div class="metric-label" data-i18n="incident_records">Incidencias de Seguridad</div>
+                  <div class="metric-label" data-i18n="incident_records">Security Incidents</div>
                 </div>
               </div>
             </div>
             <div class="charts-grid">
               <div class="chart-card">
                 <div class="chart-card-header">
-                  <h3 data-i18n="records_by_date">Registros por Fecha</h3>
+                  <h3 data-i18n="records_by_date">Records by Date</h3>
                   <i class="fas fa-chart-line text-sec"></i>
                 </div>
                 <div class="chart-body"><canvas id="lineChartDateSec"></canvas></div>
               </div>
               <div class="chart-card">
                 <div class="chart-card-header">
-                  <h3 data-i18n="records_by_agent">Registros por Agente</h3>
+                  <h3 data-i18n="records_by_agent">Records by Agent</h3>
                   <i class="fas fa-users text-sec"></i>
                 </div>
                 <div class="chart-body"><canvas id="barChartAgentSec"></canvas></div>
               </div>
               <div class="chart-card">
                 <div class="chart-card-header">
-                  <h3 data-i18n="marking_points">Puntos de Marcación</h3>
+                  <h3 data-i18n="marking_points">Marking Points</h3>
                   <i class="fas fa-map-marker-alt text-sec"></i>
                 </div>
                 <div class="chart-body"><canvas id="pieChartPointsSec"></canvas></div>
               </div>
               <div class="chart-card chart-card-map">
                 <div class="chart-card-header">
-                  <h3 data-i18n="marking_location">Ubicación de Marcaciones</h3>
+                  <h3 data-i18n="marking_location">Marking Location</h3>
                   <i class="fas fa-globe-americas text-sec"></i>
                 </div>
                 <div class="chart-body chart-body-map">
@@ -275,35 +310,35 @@
               <div class="filter-card">
                 <div class="filter-card-header">
                   <i class="fas fa-filter"></i>
-                  <h3 data-i18n="filters_title">Filtros</h3>
+                  <h3 data-i18n="filters_title">Filters</h3>
                 </div>
                 <div class="filter-inputs">
                   <div class="filter-group">
-                    <label data-i18n="from_date">Desde</label>
+                    <label data-i18n="from_date">From</label>
                     <input type="date" id="filterFromDate" />
                   </div>
                   <div class="filter-group">
-                    <label data-i18n="to_date">Hasta</label>
+                    <label data-i18n="to_date">To</label>
                     <input type="date" id="filterToDate" />
                   </div>
                   <button id="filterBtn" class="btn-filter">
                     <i class="fas fa-search"></i>
-                    <span data-i18n="filter_button">Filtrar</span>
+                    <span data-i18n="filter_button">Filter</span>
                   </button>
                   <button id="resetFilterBtn" class="btn-reset">
                     <i class="fas fa-times"></i>
-                    <span data-i18n="clear_button">Limpiar</span>
+                    <span data-i18n="clear_button">Clear</span>
                   </button>
                 </div>
               </div>
               <div class="export-bar">
                 <button id="exportExcelBtn" class="btn-export btn-excel">
                   <i class="fas fa-file-excel"></i>
-                  <span data-i18n="export_excel">Exportar Excel</span>
+                  <span data-i18n="export_excel">Export Excel</span>
                 </button>
                 <button id="exportPdfBtn" class="btn-export btn-pdf">
                   <i class="fas fa-file-pdf"></i>
-                  <span data-i18n="export_pdf">Exportar PDF</span>
+                  <span data-i18n="export_pdf">Export PDF</span>
                 </button>
               </div>
             </div>
@@ -313,11 +348,11 @@
                 <table id="dataTable" class="data-table">
                   <thead>
                     <tr>
-                      <th>Fecha</th>
-                      <th>Nombre</th>
-                      <th>Punto de Marcación</th>
-                      <th>Observación</th>
-                      <th>Foto</th>
+                      <th data-i18n="table_header_date">Date</th>
+                      <th data-i18n="table_header_name">Name</th>
+                      <th data-i18n="table_header_point">Marking Point</th>
+                      <th data-i18n="table_header_obs">Observation</th>
+                      <th data-i18n="table_header_photo">Photo</th>
                     </tr>
                   </thead>
                   <tbody id="tableBody"></tbody>
@@ -333,35 +368,35 @@
               <div class="filter-card">
                 <div class="filter-card-header">
                   <i class="fas fa-filter"></i>
-                  <h3 data-i18n="filters_title">Filtros (Security)</h3>
+                  <h3 data-i18n="filters_security">Filters (Security)</h3>
                 </div>
                 <div class="filter-inputs">
                   <div class="filter-group">
-                    <label data-i18n="from_date">Desde</label>
+                    <label data-i18n="from_date">From</label>
                     <input type="date" id="filterFromDateSec" />
                   </div>
                   <div class="filter-group">
-                    <label data-i18n="to_date">Hasta</label>
+                    <label data-i18n="to_date">To</label>
                     <input type="date" id="filterToDateSec" />
                   </div>
                   <button id="filterBtnSec" class="btn-filter">
                     <i class="fas fa-search"></i>
-                    <span data-i18n="filter_button">Filtrar</span>
+                    <span data-i18n="filter_button">Filter</span>
                   </button>
                   <button id="resetFilterBtnSec" class="btn-reset">
                     <i class="fas fa-times"></i>
-                    <span data-i18n="clear_button">Limpiar</span>
+                    <span data-i18n="clear_button">Clear</span>
                   </button>
                 </div>
               </div>
               <div class="export-bar">
                 <button id="exportExcelBtnSec" class="btn-export btn-excel">
                   <i class="fas fa-file-excel"></i>
-                  <span data-i18n="export_excel">Exportar Excel</span>
+                  <span data-i18n="export_excel">Export Excel</span>
                 </button>
                 <button id="exportPdfBtnSec" class="btn-export btn-pdf">
                   <i class="fas fa-file-pdf"></i>
-                  <span data-i18n="export_pdf">Exportar PDF</span>
+                  <span data-i18n="export_pdf">Export PDF</span>
                 </button>
               </div>
             </div>
@@ -371,11 +406,11 @@
                 <table id="dataTableSec" class="data-table">
                   <thead>
                     <tr>
-                      <th>Fecha</th>
-                      <th>Nombre</th>
-                      <th>Punto de Marcación</th>
-                      <th>Observación</th>
-                      <th>Foto</th>
+                      <th data-i18n="table_header_date">Date</th>
+                      <th data-i18n="table_header_name">Name</th>
+                      <th data-i18n="table_header_point">Marking Point</th>
+                      <th data-i18n="table_header_obs">Observation</th>
+                      <th data-i18n="table_header_photo">Photo</th>
                     </tr>
                   </thead>
                   <tbody id="tableBodySec"></tbody>
@@ -393,7 +428,7 @@
   <div id="imageModal" class="modal-overlay">
     <div class="modal-box">
       <button class="modal-close-btn" id="modalCloseBtn"><i class="fas fa-times"></i></button>
-      <img id="modalImage" src="" alt="Foto ampliada" />
+      <img id="modalImage" src="" alt="Enlarged photo" />
     </div>
   </div>
 

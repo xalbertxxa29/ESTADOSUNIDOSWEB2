@@ -1,6 +1,7 @@
 // Dashboard Module - Charts (Chart.js) + Maps (Leaflet)
+import { i18n } from './languages.js';
 import { db } from './firebase.js';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import L from 'leaflet';
@@ -48,7 +49,17 @@ export async function initDashboard() {
 
 async function fetchData() {
     try {
-        const snapshot = await getDocs(collection(db, 'IncidenciasEU'));
+        // Default to last 15 days
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+        
+        const q = query(
+            collection(db, 'IncidenciasEU'),
+            where('createdAt', '>=', fifteenDaysAgo),
+            orderBy('createdAt', 'desc')
+        );
+
+        const snapshot = await getDocs(q);
         allData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         processData(allData);
     } catch (err) {
@@ -101,18 +112,18 @@ function setupDateFilters() {
     container.innerHTML = `
     <div class="dash-filter-bar">
       <div>
-        <label>Desde</label>
+        <label data-i18n="from_date">${i18n.t('from_date')}</label>
         <input type="date" id="dashFrom" />
       </div>
       <div>
-        <label>Hasta</label>
+        <label data-i18n="to_date">${i18n.t('to_date')}</label>
         <input type="date" id="dashTo" />
       </div>
       <button id="dashFilterBtn" class="btn-filter" style="margin-top:0">
-        <i class="fas fa-search"></i> Filtrar
+        <i class="fas fa-search"></i> <span data-i18n="filter_button">${i18n.t('filter_button')}</span>
       </button>
       <button id="dashResetBtn" class="btn-reset" style="margin-top:0">
-        <i class="fas fa-times"></i> Limpiar
+        <i class="fas fa-times"></i> <span data-i18n="clear_button">${i18n.t('clear_button')}</span>
       </button>
     </div>
   `;
@@ -123,7 +134,7 @@ function setupDateFilters() {
 function applyFilter() {
     const f = document.getElementById('dashFrom')?.value;
     const t = document.getElementById('dashTo')?.value;
-    if (!f || !t) return alert('Seleccione ambas fechas');
+    if (!f || !t) return alert(i18n.t('select_dates'));
     // Fix: parse as LOCAL time (new Date(ISO string) treats it as UTC → timezone shift)
     const [fy, fm, fd] = f.split('-').map(Number);
     const from = new Date(fy, fm - 1, fd, 0, 0, 0, 0);
@@ -201,7 +212,7 @@ function updateLineChart(id, dataMap, color) {
         data: {
             labels: Object.keys(dataMap),
             datasets: [{
-                label: 'Incidencias',
+                label: i18n.t('incidents'),
                 data: values,
                 borderColor: color,
                 backgroundColor: grad,
@@ -224,7 +235,7 @@ function updateLineChart(id, dataMap, color) {
                 tooltip: {
                     callbacks: {
                         title: (items) => `📅 ${items[0].label}`,
-                        label: (item) => `  Registros: ${item.raw}`,
+                        label: (item) => `  ${i18n.t('records_label')}: ${item.raw}`,
                     }
                 },
                 datalabels: {
@@ -278,7 +289,7 @@ function updateBarChart(id, dataMap) {
         data: {
             labels,
             datasets: [{
-                label: 'Registros',
+                label: i18n.t('records_label'),
                 data: values,
                 backgroundColor: bgColors,
                 borderRadius: 6,
@@ -294,7 +305,7 @@ function updateBarChart(id, dataMap) {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    callbacks: { label: (item) => `  Registros: ${item.raw.toLocaleString()}` }
+                    callbacks: { label: (item) => `  ${i18n.t('records_label')}: ${item.raw.toLocaleString()}` }
                 },
                 datalabels: {
                     display: true,
@@ -477,7 +488,11 @@ function getDateCounts(data) {
     const c = {};
     data.forEach(x => {
         const d = x.createdAt?.toDate ? x.createdAt.toDate() : new Date(x.createdAt);
-        if (!isNaN(d)) { const k = d.toLocaleDateString('es-PE'); c[k] = (c[k] || 0) + 1; }
+        if (!isNaN(d)) { 
+            const locale = i18n.getCurrentLanguage() === 'es' ? 'es-PE' : 'en-US';
+            const k = d.toLocaleDateString(locale); 
+            c[k] = (c[k] || 0) + 1; 
+        }
     });
     return c;
 }
@@ -492,5 +507,8 @@ function getPointCounts(data) {
     return c;
 }
 function fmtDate(v) {
-    try { return (v?.toDate ? v.toDate() : new Date(v)).toLocaleDateString('es-PE'); } catch { return ''; }
+    try { 
+        const locale = i18n.getCurrentLanguage() === 'es' ? 'es-PE' : 'en-US';
+        return (v?.toDate ? v.toDate() : new Date(v)).toLocaleDateString(locale); 
+    } catch { return ''; }
 }

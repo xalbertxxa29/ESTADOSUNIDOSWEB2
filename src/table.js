@@ -1,6 +1,7 @@
 // Table Module - Dual tabs (Facility & Security) with pagination, Excel & PDF export
+import { i18n } from './languages.js';
 import { db } from './firebase.js';
-import { collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, where } from 'firebase/firestore';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -20,7 +21,16 @@ export async function initTable() {
 
 async function fetchData() {
     try {
-        const q = query(collection(db, 'IncidenciasEU'), orderBy('createdAt', 'desc'));
+        // Default to last 15 days
+        const fifteenDaysAgo = new Date();
+        fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+
+        const q = query(
+            collection(db, 'IncidenciasEU'),
+            where('createdAt', '>=', fifteenDaysAgo),
+            orderBy('createdAt', 'desc')
+        );
+
         const snap = await getDocs(q);
         allData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         facilityData = allData.filter(d => !d.tipoServicio || d.tipoServicio === 'Facility');
@@ -31,7 +41,7 @@ async function fetchData() {
         render('security');
     } catch (err) {
         console.error('Table fetch error:', err);
-        showToast('Error al cargar los datos.', 'error');
+        showToast(i18n.t('error_loading'), 'error');
     }
 }
 
@@ -92,9 +102,9 @@ function render(cat) {
     const infoEl = document.getElementById(infoId);
     if (infoEl) {
         if (filtered.length === 0) {
-            infoEl.textContent = 'No hay registros para mostrar.';
+            infoEl.textContent = i18n.t('no_records');
         } else {
-            infoEl.textContent = `Mostrando ${start + 1} – ${Math.min(end, filtered.length)} de ${filtered.length} registros`;
+            infoEl.textContent = `${i18n.t('showing_records')} ${start + 1} – ${Math.min(end, filtered.length)} ${i18n.t('of')} ${filtered.length} ${i18n.t('records')}`;
         }
     }
 
@@ -103,7 +113,7 @@ function render(cat) {
     if (pageData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:32px;color:#9ca3af">
       <i class="fas fa-inbox" style="font-size:28px;display:block;margin-bottom:10px;color:#d1d5db"></i>
-      No se encontraron registros
+      ${i18n.t('no_records')}
     </td></tr>`;
         renderPagination(cat);
         return;
@@ -196,7 +206,7 @@ function applyFilter(cat) {
     const suffix = isSec ? 'Sec' : '';
     const from = document.getElementById(`filterFromDate${suffix}`)?.value;
     const to = document.getElementById(`filterToDate${suffix}`)?.value;
-    if (!from || !to) { showToast('Selecciona ambas fechas.', 'info'); return; }
+    if (!from || !to) { showToast(i18n.t('select_dates'), 'info'); return; }
 
     // Fix: parse as LOCAL time using multi-arg constructor (new Date(str) parses ISO as UTC causing timezone shift)
     const [fy, fm, fd] = from.split('-').map(Number);
@@ -213,7 +223,7 @@ function applyFilter(cat) {
     if (isSec) { securityFiltered = filtered; securityPage = 1; }
     else { facilityFiltered = filtered; facilityPage = 1; }
     render(cat);
-    showToast(`${filtered.length} registros encontrados.`, 'success');
+    showToast(`${filtered.length} ${i18n.t('records')} ${i18n.t('found', 'found')}.`, 'success');
 }
 
 function resetFilter(cat) {
@@ -249,9 +259,14 @@ function setupImageModal() {
 function exportExcel(cat) {
     const isSec = cat === 'security';
     const data = isSec ? securityFiltered : facilityFiltered;
-    if (!data.length) { showToast('No hay datos para exportar.', 'info'); return; }
+    if (!data.length) { showToast(i18n.t('no_records'), 'info'); return; }
 
-    const rows = [['Fecha', 'Nombre', 'Punto de Marcación', 'Observación']];
+    const rows = [[
+        i18n.t('table_header_date'),
+        i18n.t('table_header_name'),
+        i18n.t('table_header_point'),
+        i18n.t('table_header_obs')
+    ]];
     data.forEach(item => rows.push([
         formatDate(item.createdAt),
         item.nombreAgente || '-',
@@ -264,24 +279,25 @@ function exportExcel(cat) {
     ws['!cols'] = [{ wch: 20 }, { wch: 22 }, { wch: 30 }, { wch: 45 }];
     XLSX.utils.book_append_sheet(wb, ws, 'Reporte');
     XLSX.writeFile(wb, `Reporte_${cat.toUpperCase()}_${new Date().toISOString().split('T')[0]}.xlsx`);
-    showToast('Excel exportado correctamente.', 'success');
+    showToast(i18n.t('excel_exported'), 'success');
 }
 
 // ─── PDF Export ──────────────────────────────────────────
 async function exportPdf(cat) {
     const isSec = cat === 'security';
     const data = isSec ? securityFiltered : facilityFiltered;
-    if (!data.length) { showToast('No data to export.', 'info'); return; }
+    if (!data.length) { showToast(i18n.t('no_records'), 'info'); return; }
 
-    showLoading('Generating PDF...');
+    showLoading(i18n.t('generating_pdf'));
     try {
         const suffix = isSec ? 'Sec' : '';
         const fromRaw = document.getElementById(`filterFromDate${suffix}`)?.value;
         const toRaw = document.getElementById(`filterToDate${suffix}`)?.value;
         const dateRangeText = (fromRaw && toRaw)
             ? `${fmtInput(fromRaw)} – ${fmtInput(toRaw)}`
-            : 'All records';
-        const genDate = new Date().toLocaleString('en-US');
+            : i18n.t('all_records');
+        const locale = i18n.getCurrentLanguage() === 'es' ? 'es-PE' : 'en-US';
+        const genDate = new Date().toLocaleString(locale);
         const label = isSec ? 'SECURITY' : 'FACILITY';
         const ac = isSec ? { r: 79, g: 70, b: 229, light: [238, 242, 255] }
             : { r: 220, g: 38, b: 38, light: [255, 241, 242] };
@@ -315,8 +331,8 @@ async function exportPdf(cat) {
         }
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(6.5); doc.text('REPORTING SYSTEM · LIDERMAN', lx, 17);
-        doc.setFontSize(14); doc.text('INCIDENT REPORT', lx, 25);
+        doc.setFontSize(6.5); doc.text(`REPORTING SYSTEM · LIDERMAN`, lx, 17);
+        doc.setFontSize(14); doc.text(i18n.t('report_title'), lx, 25);
         doc.setFontSize(6.5); doc.setFont('helvetica', 'normal');
         doc.text('United States Operations', lx, 31);
         // Badge
@@ -325,12 +341,12 @@ async function exportPdf(cat) {
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11); doc.text(label, bX + bW / 2, 23, { align: 'center' });
         doc.setFontSize(6); doc.setFont('helvetica', 'normal');
-        doc.text('Categoría', bX + bW / 2, 28, { align: 'center' });
+        doc.text(i18n.t('category'), bX + bW / 2, 28, { align: 'center' });
 
         // ── Meta boxes ──
         const bw = (CW - 8) / 3;
-        const metaLabels = ['DATE RANGE', 'TOTAL RECORDS', 'GENERATED ON'];
-        const metaVals = [dateRangeText, `${data.length} records`, genDate];
+        const metaLabels = [i18n.t('from_date') + ' – ' + i18n.t('to_date'), i18n.t('total_records'), i18n.t('generated_on')];
+        const metaVals = [dateRangeText, `${data.length} ${i18n.t('records')}`, genDate];
         metaLabels.forEach((lbl, i) => {
             const bx = ML + i * (bw + 4);
             doc.setFillColor(248, 250, 252);
@@ -352,7 +368,12 @@ async function exportPdf(cat) {
         ]);
 
         autoTable(doc, {
-            head: [['DATE', 'NAME', 'MARKING POINT', 'OBSERVATION']],
+            head: [[
+                i18n.t('table_header_date').toUpperCase(),
+                i18n.t('table_header_name').toUpperCase(),
+                i18n.t('table_header_point').toUpperCase(),
+                i18n.t('table_header_obs').toUpperCase()
+            ]],
             body: rows,
             startY: 60,
             margin: { left: ML, right: MR, top: 22, bottom: 14 },
@@ -378,7 +399,7 @@ async function exportPdf(cat) {
                     doc.roundedRect(ML, 8, CW, 10, 2, 2, 'F');
                     doc.setTextColor(255, 255, 255);
                     doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
-                    doc.text(`INCIDENT REPORT — ${label}`, ML + 3, 14);
+                    doc.text(`${i18n.t('report_title')} — ${label}`, ML + 3, 14);
                     doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5);
                     doc.text(dateRangeText, PW - MR, 14, { align: 'right' });
                 }
@@ -388,7 +409,7 @@ async function exportPdf(cat) {
                 doc.setTextColor(148, 163, 184); doc.setFont('helvetica', 'normal'); doc.setFontSize(6);
                 doc.text(`© ${new Date().getFullYear()} Liderman · LiderControl System`, ML, y + 3);
                 doc.setTextColor(ac.r, ac.g, ac.b); doc.setFont('helvetica', 'bold');
-                doc.text(`Page ${pg} / ?`, PW - MR, y + 3, { align: 'right' });
+                doc.text(`${i18n.t('showing_records')} ${pg} / ?`, PW - MR, y + 3, { align: 'right' });
             },
             showHead: 'everyPage',
         });
@@ -405,7 +426,7 @@ async function exportPdf(cat) {
         }
 
         doc.save(filename);
-        showToast('PDF generated successfully.', 'success');
+        showToast(i18n.t('pdf_generated'), 'success');
     } catch (err) {
         console.error(err);
         showToast('Error generating PDF.', 'error');

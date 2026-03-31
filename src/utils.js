@@ -17,7 +17,7 @@ export function showToast(message, type = 'info', duration = 3500) {
     }, duration);
 }
 
-export function showLoading(message = 'Procesando...') {
+export function showLoading(message = 'Processing...') {
     const overlay = document.getElementById('loadingOverlay');
     const msg = document.getElementById('loadingMessage');
     if (overlay) { overlay.style.display = 'flex'; }

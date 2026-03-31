@@ -7,7 +7,6 @@ export function initApp() {
     createSidebarOverlay();
     setupNavigation();
     setupSidebarToggle();
-    setupLanguageSelectors();
 }
 
 function createSidebarOverlay() {
@@ -59,13 +58,4 @@ function closeSidebar() {
     sidebarOverlay?.classList.remove('active');
 }
 
-function setupLanguageSelectors() {
-    ['languageSelector', 'languageSelectorLogin'].forEach(id => {
-        const sel = document.getElementById(id);
-        if (!sel) return;
-        sel.value = i18n.getCurrentLanguage();
-        sel.addEventListener('change', (e) => {
-            i18n.setLanguage(e.target.value);
-        });
-    });
-}
+

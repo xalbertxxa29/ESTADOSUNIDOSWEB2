@@ -5,6 +5,7 @@ import { initAuth } from './auth.js';
 import { initApp, navigateTo } from './app.js';
 import { initDashboard } from './dashboard.js';
 import { initTable } from './table.js';
+import { showLoading, hideLoading } from './utils.js';
 
 // ── Init i18n immediately ──
 i18n.init();
@@ -12,6 +13,9 @@ i18n.init();
 // ── Init Auth with callbacks ──
 initAuth({
   onLogin: async (user) => {
+    // Show premium transition overlay
+    showLoading('Initialising your dashboard...');
+
     // Init app navigation
     initApp();
 
@@ -23,6 +27,9 @@ initAuth({
       initDashboard(),
       initTable(),
     ]);
+
+    // Hide once data is ready
+    hideLoading();
   },
   onLogout: () => {
     // Reset to dashboard view for next login
