@@ -489,8 +489,10 @@ function getDateCounts(data) {
     data.forEach(x => {
         const d = x.createdAt?.toDate ? x.createdAt.toDate() : new Date(x.createdAt);
         if (!isNaN(d)) { 
-            const locale = i18n.getCurrentLanguage() === 'es' ? 'es-PE' : 'en-US';
-            const k = d.toLocaleDateString(locale); 
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            const k = `${dd}/${mm}/${yyyy}`;
             c[k] = (c[k] || 0) + 1; 
         }
     });
@@ -508,7 +510,11 @@ function getPointCounts(data) {
 }
 function fmtDate(v) {
     try { 
-        const locale = i18n.getCurrentLanguage() === 'es' ? 'es-PE' : 'en-US';
-        return (v?.toDate ? v.toDate() : new Date(v)).toLocaleDateString(locale); 
+        const d = v?.toDate ? v.toDate() : new Date(v);
+        if (isNaN(d)) return '';
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        return `${dd}/${mm}/${yyyy}`;
     } catch { return ''; }
 }
